@@ -12,7 +12,7 @@ async function loadPokemons(url) {
       $template = "",
       $prevLink,
       $nextLink;
-    //console.log(json);
+    console.log(json);
 
     //caputrando error
     if (!res.ok) throw { status: res.status, statusText: res.statusText };
@@ -23,7 +23,7 @@ async function loadPokemons(url) {
         let res = await fetch(json.results[i].url),
           pokemon = await res.json();
 
-        console.log(res, pokemon);
+        //console.log(res, pokemon);
 
         if (!res.ok) throw { status: res.status, statusText: res.statusText };
         //Generando el Template HTML
@@ -45,7 +45,14 @@ async function loadPokemons(url) {
       }
     }
 
+    //pintando la informacion del Json en el index.html
     $main.innerHTML = $template;
+
+    //agregando los botones de atras y adelante en el index.html
+    $prevLink = json.previous ? `<a href="${json.previous}">⏮️</a>` : "";
+    $nextLink = json.next ? `<a href="${json.next}">⏭️</a>` : "";
+
+    $links.innerHTML = $prevLink + " " + $nextLink;
   } catch (err) {
     //console.log(err);
     let message = err.statusText || "Ocurió un Error";
@@ -54,3 +61,11 @@ async function loadPokemons(url) {
 }
 
 loadPokemons(pokeAPI);
+
+//cargando la pagina siguiente.
+d.addEventListener("click", (e) => {
+  if (e.target.matches(".links a")) {
+    e.preventDefault();
+    loadPokemons(e.target.getAttribute("href"));
+  }
+});
